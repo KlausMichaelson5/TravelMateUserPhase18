@@ -162,7 +162,8 @@
         {
             await JSRuntime.InvokeVoidAsync("initializeMap", userLatitude, userLongitude, nearbyCabs);
             var result = await JSRuntime.InvokeAsync<DistanceResult>("showRouteByAddress", fromLocation, toLocation);
-            Distance = result.distance;
+            if(result!=null)
+            { Distance = result.distance;}
 
         }
     }

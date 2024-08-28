@@ -372,3 +372,8 @@ FodyWeavers.xsd
 /SearchWebApi/appsettings.json
 /UserWebApi/appsettings.json
 /WishList/appsettings.json
+/CabBooking/appsettings.json
+/CabRatingWebApi/appsettings.json
+/CabWebApi/appsettings.json
+/HotelBooking/appsettings.json
+/SearchWebApi/appsettings.json

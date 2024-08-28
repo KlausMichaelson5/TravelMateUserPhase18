@@ -222,21 +222,4 @@
         toast.show();
     ");
     }
-    private async Task ViewRooms(int hotelId, string hotelName)
-    {
-        var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "currentUser");
-
-        if (string.IsNullOrEmpty(userJson))
-        {
-            // Redirect to login page if user is not logged in
-            NavigationManager.NavigateTo("/login");
-        }
-        else
-        {
-            // User is logged in, navigate to the rooms page
-            NavigationManager.NavigateTo($"/rooms/{hotelId}/{hotelName}/{hotelBookingString}");
-        }
-    }
-
-
 }

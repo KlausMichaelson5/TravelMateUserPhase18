@@ -10,19 +10,6 @@
 
 <html>
 <head>
-    <script>
-        function localStorageHelper ={
-            setItem: function (key, value) {
-                localStorage.setItem(key, value);
-            },
-            getItem: function (key) {
-                return localStorage.getItem(key);
-            },
-            removeItem: function (key) {
-                localStorage.removeItem(key);
-            }
-        };
-    </script>
 </head>
 <body>
     <div class="container mt-5">
@@ -73,8 +60,11 @@
         Console.WriteLine(user.Username);
         userId = user?.UserId ?? 0;
         await LoadBookingDetailsAsync();
-        Thread.Sleep(5000);
-        Navigation.Refresh();
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            var toastEl = document.getElementById('wishlistToast');
+            var toast = new bootstrap.Toast(toastEl, { delay: 3000 }); // Toast stays for 3 seconds
+            toast.show();
+        ");
     }
 
     private async Task LoadBookingDetailsAsync()
@@ -82,7 +72,6 @@
         try
         {
             booking = await cabBookingUIService.GetCabBookingById(BookingId, userId);
-            await JSRuntime.InvokeVoidAsync("redirectToHome");
 
         }
         catch (Exception ex)
