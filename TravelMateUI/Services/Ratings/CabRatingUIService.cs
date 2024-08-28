@@ -10,6 +10,7 @@ namespace TravelMateUI.Services.Ratings
         Task<List<CabRating>> GetAllCabRatings(int currentUserId);
         Task<CabRating> GetCabRatingById(int id, int currentUserId);
         Task<List<CabRating>> GetCabRatingsByUser(int userId);
+        Task<double> GetTotalRatingsForCabAsync(int cabId);
         Task UpdateCabRating(CabRating rating, int currentUserId);
     }
 
@@ -22,7 +23,7 @@ namespace TravelMateUI.Services.Ratings
             _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri(Program.Configuration["CabRating"]!);
         }
-      
+
         public async Task<List<CabRating>> GetAllCabRatings(int currentUserId)
         {
             return await _httpClient.GetFromJsonAsync<List<CabRating>>($"?currentUserId={currentUserId}/");
@@ -59,6 +60,19 @@ namespace TravelMateUI.Services.Ratings
         public async Task<List<CabRating>> GetCabRatingsByUser(int userId)
         {
             return await _httpClient.GetFromJsonAsync<List<CabRating>>($"user/{userId}/ratings");
+        }
+        public async Task<double> GetTotalRatingsForCabAsync(int cabId)
+        {
+            var response = await _httpClient.GetAsync($"{cabId}/totalrating");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<double>();
+            }
+            else
+            {
+                throw new Exception("Failed to fetch the total rating.");
+            }
         }
     }
 }
