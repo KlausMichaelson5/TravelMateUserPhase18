@@ -1,4 +1,4 @@
-﻿let map;
+﻿/*let map;*/
 let userMarker;
 let cabMarkers = [];
 let directionsService;

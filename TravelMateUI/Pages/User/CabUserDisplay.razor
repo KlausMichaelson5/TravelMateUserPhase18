@@ -35,9 +35,9 @@
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     }
 </style>
-<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDyjeyU3YV0msuacUOVafevmN6KpsgncgE"></script>
+@* <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDyjeyU3YV0msuacUOVafevmN6KpsgncgE"></script> *@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="./cabBooking.js"></script>
+@* <script src="./cabBooking.js"></script> *@
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -163,7 +163,7 @@
             await JSRuntime.InvokeVoidAsync("initializeMap", userLatitude, userLongitude, nearbyCabs);
             var result = await JSRuntime.InvokeAsync<DistanceResult>("showRouteByAddress", fromLocation, toLocation);
             if(result!=null)
-            { Distance = result.distance;}
+            {Distance = result.distance;}
 
         }
     }
