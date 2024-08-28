@@ -125,7 +125,9 @@
                                         </span>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <a class="btn btn-primary" href="/rooms/@hotel.HotelId/@hotel.Name/@hotelBookingString">View Rooms</a>
+                                        <button class="btn btn-primary" @onclick="() => ViewRooms(hotel.HotelId, hotel.Name)">
+                                            View Rooms
+                                        </button>
                                         <button class="btn btn-secondary" @onclick="() => AddToWishList(hotel)">
                                             <i class="fas fa-heart"></i> Add to Wishlist
                                         </button>
@@ -145,11 +147,24 @@
         <strong class="mr-auto text-success">Success</strong>
         <small>Just now</small>
         <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+            <span aria-hidden="true">×</span>
         </button>
     </div>
     <div class="toast-body">
         <i class="fas fa-check-circle text-success"></i> Added to Wishlist!
+    </div>
+</div>
+
+<div class="toast" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+        <strong class="mr-auto text-danger">Login Required</strong>
+        <small>Just now</small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="toast-body">
+        <i class="fas fa-exclamation-circle text-danger"></i> Please log in to add to Wishlist!
     </div>
 </div>
 
@@ -158,7 +173,7 @@
     public string hotelBookingString { get; set; }
     private List<Hotel> hotels;
     private SearchModel hotelBooking { get; set; } = new SearchModel();
-    private int currentUserId = 1; // Assume you get this from the authentication context
+    private int currentUserId { get; set; } // Assume you get this from the authentication context
 
     protected override async Task OnInitializedAsync()
     {
@@ -174,6 +189,22 @@
 
     private async Task AddToWishList(Hotel hotel)
     {
+        var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "currentUser");
+
+        if (string.IsNullOrEmpty(userJson))
+        {
+            // Show a login required message
+            await JSRuntime.InvokeVoidAsync("eval", @"
+            var toastEl = document.getElementById('loginToast');
+            var toast = new bootstrap.Toast(toastEl, { delay: 3000 }); // Toast stays for 3 seconds
+            toast.show();
+        ");
+            return;
+        }
+
+        var user = JsonSerializer.Deserialize<User>(userJson); // Deserialize user from local storage
+        currentUserId = user?.UserId ?? 0;
+
         var wishListItem = new WishListTable
             {
                 HotelId = hotel.HotelId,
@@ -183,13 +214,29 @@
             };
 
         await WishListService.AddWishListItem(wishListItem, currentUserId);
+
         // Show a success message
         await JSRuntime.InvokeVoidAsync("eval", @"
-            var toastEl = document.getElementById('wishlistToast');
-            var toast = new bootstrap.Toast(toastEl, { delay: 3000 }); // Toast stays for 3 seconds
-            toast.show();
-        ");
+        var toastEl = document.getElementById('wishlistToast');
+        var toast = new bootstrap.Toast(toastEl, { delay: 3000 }); // Toast stays for 3 seconds
+        toast.show();
+    ");
     }
-}
+    private async Task ViewRooms(int hotelId, string hotelName)
+    {
+        var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "currentUser");
 
-has context menu
+        if (string.IsNullOrEmpty(userJson))
+        {
+            // Redirect to login page if user is not logged in
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            // User is logged in, navigate to the rooms page
+            NavigationManager.NavigateTo($"/rooms/{hotelId}/{hotelName}/{hotelBookingString}");
+        }
+    }
+
+
+}
