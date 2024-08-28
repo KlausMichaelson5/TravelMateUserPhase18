@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="container mt-5">
-        @if (booking != null)
+        @if (booking != null && user!=null)
         {
             <div class="card shadow-lg mb-5">
                 <div class="card-body">
@@ -51,12 +51,14 @@
 
     public int userId { get; set; }
 
+    private User user { get; set; }
+
     private CabBookingModel booking = new CabBookingModel();
 
     protected override async Task OnInitializedAsync()
     {
         var userJson = await JSRuntime.InvokeAsync<string>("localStorageHelper.getItem", "currentUser");
-        var user = JsonSerializer.Deserialize<User>(userJson); // Deserialize user from local storage
+        user = JsonSerializer.Deserialize<User>(userJson); // Deserialize user from local storage
         Console.WriteLine(user.Username);
         userId = user?.UserId ?? 0;
         await LoadBookingDetailsAsync();

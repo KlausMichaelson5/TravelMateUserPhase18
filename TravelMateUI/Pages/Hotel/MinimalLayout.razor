@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using TravelMate2.Services
 @using TravelMateUI.Services
+@using TravelMate.Models
 @inject UserInfoService userInfoService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -134,7 +135,7 @@
                     </ul>
                 </div>
                 <div class="d-flex align-items-center">
-                    <span class="text-white mr-3">Welcome, @userInfoService.GetCurrentUser().Username!</span>
+                    <span class="text-white mr-3">Welcome, @user.Username</span>
                 </div>
             </nav>
         </div>
@@ -192,13 +193,14 @@
     // {
     //     // await JSRuntime.InvokeVoidAsync("scrollToSection", "manage-hotels");
     // }
+    private User user{ get; set; }=new();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             await authStateProvider.GetAuthenticationStateAsync();
-            var userId = userInfoService._currentUser.UserId;
+            user = userInfoService._currentUser;
         }
         catch(Exception ex)
         {

@@ -112,9 +112,41 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mx-auto py-1" px-5> <!-- Centered -->
+
+                  @if (userInfoService.GetCurrentUser() != null && userInfoService.GetCurrentUser().UserType == UserType.driver_client)
+                                {
+                            <ul class="navbar-nav mx-auto py-1" px-5>
+                                <!-- Centered -->
+                                <li class="nav-item">
+
+                                    <a class="nav-link" href="/cabowner">
+                                        <i class="fas fa-id-card"></i> Work
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+
+                                <a class="nav-link" href="/">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </li>
             <li class="nav-item">
-                <a class="nav-link" href="/">
+                <a class="nav-link" href="#hotelSearchBar">
+                    <i class="fas fa-hotel"></i> Hotels
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/bookcab">
+                    <i class="fas fa-car"></i> Cabs
+                </a>
+            </li>
+        </ul>}
+                                else
+                                {
+                            <ul class="navbar-nav mx-auto py-1" px-5>
+                                <!-- Centered -->
+                                <li class="nav-item">
+
+                                <a class="nav-link" href="/">
                     <i class="fas fa-home"></i> Home
                 </a>
             </li>
@@ -129,14 +161,20 @@
                 </a>
             </li>
         </ul>
+                                }
+                            
                         <div class="d-flex align-items-center">
-                            @if (userInfoService.GetCurrentUser() != null)
+                            @if (userInfoService.GetCurrentUser() != null && userInfoService.GetCurrentUser().UserType == UserType.driver_client)
                             {
                                 <div class="dropdown">
                                     <button class="btn btn-success rounded-circle p-0" type="button" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:30px">
                                         @userInfoService.GetCurrentUser().Name.Substring(0, 1).ToUpper()
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-right p-3" aria-labelledby="profileDropdown">
+                                        <a class="dropdown-item d-flex align-items-center" href="/cabowner">
+                                            <i class="bi bi-person-workspace me-2"></i>Work
+                                            <small class="text-muted ms-auto">View your ride details</small>
+                                        </a>
                                         <a class="dropdown-item d-flex align-items-center" href="/viewprofile">
                                             <i class="bi bi-person-circle me-2"></i> Profile
                                             <small class="text-muted ms-auto">View your profile</small>
@@ -166,6 +204,42 @@
 
                                 </div>
             }
+                            else if (userInfoService.GetCurrentUser() != null)
+                            {
+                                <div class="dropdown">
+                                    <button class="btn btn-success rounded-circle p-0" type="button" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:30px">
+                                        @userInfoService.GetCurrentUser().Name.Substring(0, 1).ToUpper()
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right p-3" aria-labelledby="profileDropdown">     
+                                        <a class="dropdown-item d-flex align-items-center" href="/viewprofile">
+                                            <i class="bi bi-person-circle me-2"></i> Profile
+                                            <small class="text-muted ms-auto">View your profile</small>
+                                        </a>
+                                        <a class="dropdown-item d-flex align-items-center" href="/updateprofile">
+                                            <i class="bi bi-pencil-square me-2"></i> Update
+                                            <small class="text-muted ms-auto">Edit your information</small>
+                                        </a>
+                                        <a class="dropdown-item d-flex align-items-center" href="/wishlist">
+                                            <i class="bi bi-heart me-2"></i> Favorites
+                                            <small class="text-muted ms-auto">Your favorite items</small>
+                                        </a>
+                                        <a class="dropdown-item d-flex align-items-center" href="/mybookings">
+                                            <i class="bi bi-calendar-check me-2"></i> Bookings
+                                            <small class="text-muted ms-auto">Your bookings</small>
+                                        </a>
+                                        <a class="dropdown-item d-flex align-items-center" href="/myratings">
+                                            <i class="bi bi-star me-2"></i> Ratings
+                                            <small class="text-muted ms-auto">Your ratings</small>
+                                        </a>
+                                        <div class="dropdown-divider px-lg-0"></div>
+                                        <a class="dropdown-item text-danger d-flex align-items-center" href="#" @onclick="Logout">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                            <small class="text-muted ms-5"> Sign out of your account</small>
+                                        </a>
+                                    </div>
+
+                                </div>
+                            }
             else
             {
                 <a href="/login" class="btn btn-outline-primary mr-2">Login</a>

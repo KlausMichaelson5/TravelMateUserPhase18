@@ -4,7 +4,7 @@ let cabMarkers = [];
 let directionsService;
 let directionsRenderer;
 
-function initializeMap(userLat, userLng, nearbyCabs) {
+function initializeMap(userLat, userLng) {
     const mapOptions = {
         center: { lat: userLat, lng: userLng },
         zoom: 14,
@@ -20,23 +20,23 @@ function initializeMap(userLat, userLng, nearbyCabs) {
     map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
     userMarker = new google.maps.Marker({
-        position: { lat: userLat, lng: userLng },
+        position: { lat: parseFloat(userLat), lng: parseFloat(userLng) },
         map: map,
         icon: {
             url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
         }
     });
 
-    nearbyCabs.forEach(cab => {
-        const cabMarker = new google.maps.Marker({
-            position: { lat: cab.Latitude, lng: cab.Longitude },
-            map: map,
-            icon: {
-                url: "http://maps.google.com/mapfiles/ms/icons/car.png"
-            }
-        });
-        cabMarkers.push(cabMarker);
-    });
+    //nearbyCabs.forEach(cab => {
+    //    const cabMarker = new google.maps.Marker({
+    //        position: { lat: cab.Latitude, lng: cab.Longitude },
+    //        map: map,
+    //        icon: {
+    //            url: "http://maps.google.com/mapfiles/ms/icons/car.png"
+    //        }
+    //    });
+    //    cabMarkers.push(cabMarker);
+    //});
 
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer({
@@ -147,9 +147,9 @@ function initializeAutocomplete(elementId) {
         }
 
         // If both locations are filled, display the route
-        if (elementId === "fromLocation" || elementId === "toLocation") {
-            DotNet.invokeMethodAsync('TravelMate2', 'SetRouteSearched')
-                .then(() => initializeMap());
-        }
+        //if (elementId === "fromLocation" || elementId === "toLocation") {
+        //    DotNet.invokeMethodAsync('TravelMate2', 'SetRouteSearched')
+        //        .then(() => initializeMap());
+        //}
     });
 }
