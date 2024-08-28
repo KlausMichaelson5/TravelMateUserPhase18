@@ -1,5 +1,6 @@
 ﻿@page "/hotel-owner-home"
 @using Microsoft.AspNetCore.Authorization
+@using System.Text.Json
 @using TravelMate.Models
 @using TravelMate2.Services
 @using TravelMateUI.Services
@@ -284,28 +285,43 @@
     private List<Hotel> hotels = new();
     private List<HotelBooking> upcomingBookings = new();
     private List<HotelBooking> pastBookings = new();
+    private int userId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            await authStateProvider.GetAuthenticationStateAsync();
-            var userId = userInfoService._currentUser.UserId;
-            hotels = await SearchUIService.GetAllHotels();
+            // Get the current user's details from local storage
+            var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "currentUser");
+            var user = JsonSerializer.Deserialize<User>(userJson); // Deserialize user from local storage
+            userId = user?.UserId ?? 0;
 
+            // Ensure the user is authenticated
+            await authStateProvider.GetAuthenticationStateAsync();
+
+            // Get all hotels
+            var allHotels = await SearchUIService.GetAllHotels();
+
+            // Filter hotels specific to the current user
+            hotels = allHotels.Where(h => h.HotelOwnerId == userId).ToList();
+
+            // Initialize lists to hold upcoming and past bookings
             var allUpcomingBookings = new List<HotelBooking>();
             var allPastBookings = new List<HotelBooking>();
 
+            // Get today's date for filtering bookings
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            // Filter bookings based on hotels owned by the current user
             foreach (var hotel in hotels)
             {
                 var allBookings = await SearchUIService.GetAllHotelBookings(hotel.HotelId);
-
-                var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
                 allUpcomingBookings.AddRange(allBookings.Where(b => b.CheckOutDate >= today));
                 allPastBookings.AddRange(allBookings.Where(b => b.CheckOutDate < today));
             }
 
+            // Sort bookings by date
             upcomingBookings = allUpcomingBookings.OrderBy(b => b.CheckInDate).ToList();
             pastBookings = allPastBookings.OrderByDescending(b => b.CheckOutDate).ToList();
         }

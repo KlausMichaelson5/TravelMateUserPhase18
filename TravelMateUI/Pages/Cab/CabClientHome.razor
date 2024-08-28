@@ -173,7 +173,7 @@
                                 <h5 class="mb-0">Upcoming Rides</h5>
                             </div>
                             <div class="card-body">
-                                @if (UpCommingRides.Count > 0)
+                                @if (UpCommingRides.Count > 0 && CabOwnerCab.AvailabilityStatus == true)
                                 {
                                     <ul class="list-group">
                                         @foreach (var ride in UpCommingRides)
@@ -184,6 +184,22 @@
                                                 <p><strong>Fare:</strong> $@ride.TotalAmount</p>
                                                 <button class="btn btn-success" @onclick="() => AcceptRide(ride)">Accept</button>
                                                 <button class="btn btn-danger" @onclick="() => RejectRide(ride)">Reject</button>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else if (UpCommingRides.Count > 0 && CabOwnerCab.AvailabilityStatus == false)
+                                {
+                                    <ul class="list-group">
+                                        @foreach (var ride in UpCommingRides)
+                                        {
+                                            <li class="list-group-item">
+                                                <p><strong>Pickup:</strong> @ride.PickupLocation</p>
+                                                <p><strong>Drop:</strong> @ride.DropLocation</p>
+                                                <p><strong>Fare:</strong> $@ride.TotalAmount</p>
+                                                <button class="btn btn-success" @onclick="() => AcceptRide(ride)" disabled>Accept</button>
+                                                <button class="btn btn-danger" @onclick="() => RejectRide(ride)">Reject</button>
+                                                <p>Complete the previous ride to accept this ride.</p>
                                             </li>
                                         }
                                     </ul>
@@ -365,6 +381,12 @@
     {
         await cabBookingService.UpdateCabBooking(cabBooking, BookingStatus.Accepted);
 
+        if (CabOwnerCab != null)
+        {
+            CabOwnerCab.AvailabilityStatus = false;
+            await cabUIService.UpdateCab(CabOwnerCab, CabOwnerCab.DriverId);
+        }
+
         AllRides = await searchUIService.GetAllCabBookings();
         AcceptedRides = AllRides.Where(c => c.CabId == CabOwnerCab.CabId && c.BookingStatus == BookingStatus.Accepted).ToList();
         UpCommingRides = AllRides.Where(c => c.CabId == CabOwnerCab.CabId && c.BookingStatus == BookingStatus.Pending).ToList();
@@ -383,7 +405,11 @@
     private async Task CompleteRide(CabBookingModel cabBooking)
     {
         await cabBookingService.UpdateCabBooking(cabBooking, BookingStatus.Finished);
-
+        if (CabOwnerCab != null)
+        {
+            CabOwnerCab.AvailabilityStatus = true;
+            await cabUIService.UpdateCab(CabOwnerCab, CabOwnerCab.DriverId);
+        }
         AllRides = await searchUIService.GetAllCabBookings();
 
         AcceptedRides = AllRides.Where(c => c.CabId == CabOwnerCab.CabId && c.BookingStatus == BookingStatus.Accepted).ToList();

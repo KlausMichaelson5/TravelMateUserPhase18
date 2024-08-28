@@ -3,6 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TravelMate.Models
 {
+    public class LocationResult
+    {
+        public decimal latitude { get; set; }
+        public decimal longitude { get; set; }
+    }
     public enum VehicleType
     {
         Mini,

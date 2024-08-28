@@ -4,6 +4,7 @@
 @using TravelMate2.Services
 @layout MinimalLayout
 @inject IHotelUIService HotelService
+@inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @inject UserInfoService userInfoService
 @attribute [Authorize(Roles = "hotel_owner")]
@@ -41,6 +42,8 @@
                 color: #ffc107;
             }
     </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDyjeyU3YV0msuacUOVafevmN6KpsgncgE&callback=initMap"></script>
+    <script src="./map-functions.js"></script>
 </head>
 
 <div class="details-container">
@@ -91,7 +94,6 @@
                 <label for="description" class="form-label">Description</label>
                 <InputTextArea id="description" class="form-control" @bind-Value="hotel.Description" rows="4" placeholder="Enter a brief description of the hotel" />
             </div>
-
             <div class="mb-3">
                 <label for="latitude" class="form-label">Latitude</label>
                 <InputNumber id="latitude" class="form-control" @bind-Value="hotel.Latitude" placeholder="Enter the latitude" />
@@ -103,12 +105,43 @@
             </div>
 
             <div class="mb-3">
+                <strong>Set Your Location:</strong>
+                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#locationModal1">
+                    Set Location
+                </button>
+            </div>
+
+            <div class="mb-3">
                 <label for="rating" class="form-label">Rating</label>
                 <InputNumber id="rating" class="form-control" @bind-Value="hotel.Rating" placeholder="Enter the rating" />
             </div>
 
             <button type="submit" class="btn btn-primary">Update Hotel</button>
         </EditForm>
+        <div class="modal fade" id="locationModal1" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="locationModalLabel">Set Your Location</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="searchBox" class="form-label">Search for a place</label>
+                            <input id="searchBox" class="form-control" type="text" placeholder="Enter a location" @bind="hotelLocation" />
+                            <button class="btn btn-primary mt-2" @onclick="searchLocation">Search</button>
+                        </div>
+                        <div id="map" style="height: 400px;"></div>
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="button" class="btn btn-success" @onclick="GetCurrentLocationAsync">Use Current Location</button>
+                            <button type="button" class="btn btn-success" @onclick="LocationSubmit" data-bs-dismiss="modal">Submit</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     }
     else
     {
@@ -119,6 +152,9 @@
 @code {
     [Parameter] public int hotelId { get; set; }
     private Hotel hotel;
+    private decimal hotelLatitude = 12.97194000M;
+    private decimal hotelLongitude = 77.59369000M;
+    private string hotelLocation;
 
     protected override async Task OnInitializedAsync()
     {
@@ -138,6 +174,8 @@
         try
         {
             var userId = userInfoService._currentUser.UserId;
+            hotel.Latitude = hotelLatitude;
+            hotel.Longitude = hotelLongitude;
             await HotelService.Update(hotel, userId);
             Navigation.NavigateTo("/hotel-owner-home");
         }
@@ -145,5 +183,37 @@
         {
             Console.WriteLine($"Error updating hotel: {ex.Message}");
         }
+    }
+    private async Task GetCurrentLocationAsync()
+    {
+        try
+        {
+            var result = await JSRuntime.InvokeAsync<LocationResult>("getCurrentLocation");
+            if (result != null)
+            {
+                hotelLatitude = result.latitude;
+                hotelLongitude = result.longitude;
+            }
+            await InitializeMapAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching location: {ex.Message}");
+        }
+    }
+    private async Task InitializeMapAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("initializeMap", hotelLatitude, hotelLongitude);
+
+    }
+    private async Task searchLocation()
+    {
+        var result = await JSRuntime.InvokeAsync<LocationResult>("showLocation", hotelLocation);
+        hotel.Latitude = result.latitude;
+        hotel.Longitude = result.longitude;
+    }
+    private async Task LocationSubmit()
+    {
+
     }
 }

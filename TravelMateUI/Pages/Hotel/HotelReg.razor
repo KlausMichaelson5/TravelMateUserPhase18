@@ -191,6 +191,8 @@
     {
         try
         {
+            hotel.Latitude = hotelLatitude;
+            hotel.Longitude = hotelLongitude;
             await HotelService.Add(hotel, userInfoService._currentUser.UserId);
             isSuccess = true;
             errorMessage = null;
@@ -202,11 +204,7 @@
             errorMessage = ex.Message;
         }
     }
-    public class LocationResult
-    {
-        public decimal latitude { get; set; }
-        public decimal longitude { get; set; }
-    }
+
     private async Task GetCurrentLocationAsync()
     {
         try

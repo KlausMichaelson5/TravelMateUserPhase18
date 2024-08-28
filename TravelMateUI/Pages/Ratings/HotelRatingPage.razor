@@ -185,6 +185,7 @@
         if (userId > 0)
         {
             await hotelRatingUIService.AddHotelRatingAsync(hotelRating, userId);
+            Navigation.NavigateTo("/mybookings");
         }
         else
         {
