@@ -3,7 +3,6 @@ using PackageDll.Services;
 
 namespace ProPackages.DataServices
 {
-
     public class PackageproDataService
     {
         private readonly IPackageproServices _packageproServices;
