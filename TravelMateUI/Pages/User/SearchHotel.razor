@@ -25,7 +25,8 @@
     .card-img {
         border-top-left-radius: 15px;
         border-bottom-left-radius: 15px;
-        height: 100%;
+        height: 200px;
+        width: 100%;
         object-fit: cover;
     }
 
@@ -72,9 +73,42 @@
 </style>
 
 <div class="container my-4">
-    <div class="text-center mb-4">
-        <h2 class="display-4">Hotels in @hotelBooking.CityName</h2>
+    <div class="search-bar" id="hotelSearchBar">
+        <EditForm Model="@hotelBooking" OnValidSubmit="SubmitSearch">
+            <DataAnnotationsValidator />
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <label for="cityName">Add Location</label>
+                    <InputText @bind-Value="hotelBooking.CityName" id="cityName" class="form-control" placeholder="Where are you going?" required />
+                    <ValidationMessage For="@(() => hotelBooking.CityName)" />
+                </div>
+                <div class="col-md-3">
+                    <label for="checkInDate">Check-in</label>
+                    <InputDate @bind-Value="hotelBooking.CheckInDate" id="checkInDate" class="form-control" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    <ValidationMessage For="@(() => hotelBooking.CheckInDate)" />
+                </div>
+                <div class="col-md-3">
+                    <label for="checkOutDate">Check-out</label>
+                    <InputDate @bind-Value="hotelBooking.CheckOutDate" id="checkOutDate" class="form-control" min="@(hotelBooking.CheckInDate?.AddDays(1).ToString("yyyy-MM-dd") ?? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))" />
+                    <ValidationMessage For="@(() => hotelBooking.CheckOutDate)" />
+                </div>
+                <div class="col-md-2">
+                    <label for="guests">Guests</label>
+                    <InputSelect @bind-Value="hotelBooking.Guests" id="guests" class="form-control">
+                        @for (int i = 1; i <= 4; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => hotelBooking.Guests)" />
+                </div>
+                <div class="col-md-12 text-center mt-3">
+                    <button type="submit" class="btn btn-primary w-100">Search Hotel</button>
+                </div>
+            </div>
+        </EditForm>
     </div>
+
 
     @if (hotels == null)
     {
@@ -168,6 +202,8 @@
     </div>
 </div>
 
+
+
 @code {
     [Parameter]
     public string hotelBookingString { get; set; }
@@ -185,6 +221,16 @@
     {
         var allHotels = await SearchService.GetAllHotels();
         hotels = allHotels.Where(h => h.City.Equals(hotelBooking.CityName, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
+    private async Task SubmitSearch()
+    {
+        // Serialize the search model and update the URL with the new search criteria
+        var newHotelBookingString = JsonSerializer.Serialize(hotelBooking);
+        NavigationManager.NavigateTo($"/hotels/{newHotelBookingString}");
+
+        // Reload the hotels based on the new criteria
+        await LoadHotels();
     }
 
     private async Task AddToWishList(Hotel hotel)
@@ -222,6 +268,7 @@
         toast.show();
     ");
     }
+
     private async Task ViewRooms(int hotelId, string hotelName)
     {
         var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "currentUser");
@@ -233,9 +280,8 @@
         }
         else
         {
-            // User is logged in, navigate to the rooms page
+            // Logic to view rooms
             NavigationManager.NavigateTo($"/rooms/{hotelId}/{hotelName}/{hotelBookingString}");
         }
     }
-
 }

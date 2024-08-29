@@ -365,10 +365,10 @@
 
 
 @code {
-     private SearchModel searchModel{ get; set; } = new SearchModel();
-     private List<TravelMate.Models.Hotel> hotels;
+    private SearchModel searchModel{ get; set; } = new SearchModel();
+    private List<TravelMate.Models.Hotel> hotels;
 
-     protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         // Fetch top-rated hotels
         var allHotels = await SearchUIService.GetAllHotels();
@@ -378,20 +378,19 @@
     private void SubmitSearch()
     {
 
-        if (string.IsNullOrEmpty(searchModel.CityName) ||
-            !searchModel.CheckInDate.HasValue ||
-            !searchModel.CheckOutDate.HasValue)
-        {
-            ShowErrorPopup("Please enter all required fields.");
-            return;
-        }
+        // if (string.IsNullOrEmpty(searchModel.CityName) ||
+        //     !searchModel.CheckInDate.HasValue ||
+        //     !searchModel.CheckOutDate.HasValue)
+        // {
+        //     ShowErrorPopup("Please enter all required fields.");
+        //     return;
+        // }
 
-        if (searchModel.CheckInDate >= searchModel.CheckOutDate)
-        {
-            ShowErrorPopup("Check-out date must be after check-in date.");
-            return;
-        }
-
+        // if (searchModel.CheckInDate >= searchModel.CheckOutDate)
+        // {
+        //     ShowErrorPopup("Check-out date must be after check-in date.");
+        //     return;
+        // }
         var checkInDate = searchModel.CheckInDate.Value.ToString("yyyy-MM-dd");
         var checkOutDate = searchModel.CheckOutDate.Value.ToString("yyyy-MM-dd");
 
@@ -413,11 +412,11 @@
         [Required(ErrorMessage = "Please enter a destination.")]
         public string CityName { get; set; }
 
-        [Required(ErrorMessage = "Please select a check-in date.")]
-        public DateTime? CheckInDate { get; set; }
+        //[Required(ErrorMessage = "Please select a check-in date.")]
+        public DateTime? CheckInDate { get; set; } = DateTime.Now;
 
-        [Required(ErrorMessage = "Please select a check-out date.")]
-        public DateTime? CheckOutDate { get; set; }
+        // [Required(ErrorMessage = "Please select a check-out date.")]
+        public DateTime? CheckOutDate { get; set; } = DateTime.Now.AddDays(1);
 
         [Required(ErrorMessage = "Please select the number of guests.")]
         [Range(1, 4, ErrorMessage = "Number of guests must be between 1 and 4.")]

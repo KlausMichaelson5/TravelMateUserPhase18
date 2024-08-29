@@ -54,7 +54,7 @@
     private User user { get; set; }
 
     private CabBookingModel booking = new CabBookingModel();
-
+    
     protected override async Task OnInitializedAsync()
     {
         var userJson = await JSRuntime.InvokeAsync<string>("localStorageHelper.getItem", "currentUser");
