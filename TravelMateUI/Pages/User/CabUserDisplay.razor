@@ -47,7 +47,7 @@
                     </div>
                     <div class="form-group mb-3">
                         <label for="toLocation"><i class="fas fa-map-marker-alt text-danger"></i> Drop-off Location:</label>
-                        <input type="text" id="toLocation" @bind="toLocation" class="form-control" placeholder="Enter drop-off location"  @oninput="HandleToLocationChange" required />
+                        <input type="text" id="toLocation" @bind="toLocation" class="form-control" placeholder="Enter drop-off location" @oninput="HandleToLocationChange" required />
                     </div>
 
                     <button class="btn btn-primary btn-block" @onclick="OnSearchClicked">
@@ -61,7 +61,6 @@
     <div class="map-container">
         <div id="map" class="map"></div>
     </div>
-   
     @if (isRouteSearched && nearbyCabs == null)
     {
         <div class="text-center">
@@ -78,7 +77,6 @@
     }
     else if (isRouteSearched)
     {
-        
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card shadow-sm">
@@ -91,7 +89,7 @@
                                     <div class="cab-item p-3 border rounded hover-shadow">
                                         <div class="row">
                                             <div class="col-12">
-                                                <img src="@cab.CabPhoto" alt="@cab.VehicleName" class="img-fluid rounded" />
+                                                <img src="@cab.CabPhoto" alt="@cab.VehicleName" class="img-fluid" style="max-height: 200px; width: 100%; object-fit: cover;" />
                                             </div>
                                             <div class="col-12 mt-2">
                                                 <h4 class="text-primary">@cab.VehicleName</h4>
@@ -113,7 +111,7 @@
         </div>
     }
 </div>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDyjeyU3YV0msuacUOVafevmN6KpsgncgE&libraries=places"async></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDyjeyU3YV0msuacUOVafevmN6KpsgncgE&libraries=places" async></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="./cabBooking.js"></script>
 
@@ -166,15 +164,14 @@
     }
 
 
-
     private async Task InitializeMapAsync()
     {
         if (isRouteSearched)
         {
             await JSRuntime.InvokeVoidAsync("initializeMap", userLatitude, userLongitude);
             var result = await JSRuntime.InvokeAsync<DistanceResult>("showRouteByAddress", fromLocation, toLocation);
-            if(result!=null)
-            {Distance = result.distance;}
+            if (result != null)
+            { Distance = result.distance; }
 
         }
     }
