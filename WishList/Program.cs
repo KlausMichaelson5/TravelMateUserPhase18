@@ -49,6 +49,7 @@ namespace WishList
             app.MapControllers();
 
             app.Run();
+
         }
     }
 }
