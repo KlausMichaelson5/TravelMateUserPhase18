@@ -166,11 +166,13 @@ cd client && npm start
 
 <div align="center">
 
-| Karthik G Kulkarni | [Friend's Name] |
+| Karthik G Kulkarni | Prathamesh | Raghu |
+|---|---|---|
+| [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/your-username) | [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/prathamesh-username) | [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/raghu-username) |
+
+| Shashank | Ayush |
 |---|---|
-| [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/your-username) | [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/friends-username) |
-| Associate Software Developer | [Friend's Role] |
-| Fidelity National Financial India | [Friend's Company] |
+| [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/shashank-username) | [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ayush-username) |
 
 </div>
 
